@@ -1,0 +1,312 @@
+/* =============================================
+   SENA Theme - Custom Properties
+   ============================================= */
+
+:root {
+  /* Colores principales SENA */
+  --sena-primary: #005a32;
+  --sena-primary-dark: #003d22;
+  --sena-primary-light: #007a42;
+  
+  /* Color secundario SENA */
+  --sena-secondary: #04b457;
+  --sena-secondary-dark: #039a4a;
+  --sena-secondary-light: #05d065;
+  
+  /* Colores neutros */
+  --sena-neutral: #c2c2c2;
+  --sena-neutral-dark: #a0a0a0;
+  --sena-neutral-light: #e0e0e0;
+  
+  /* Colores base */
+  --sena-base: #ffffff;
+  --sena-text: #333333;
+  --sena-text-light: #666666;
+  --sena-text-muted: #999999;
+  
+  /* Colores de estado */
+  --sena-success: #04b457;
+  --sena-warning: #f59e0b;
+  --sena-danger: #ef4444;
+  --sena-info: #3b82f6;
+  
+  /* Sombras */
+  --sena-shadow-sm: 0 1px 2px rgba(0, 90, 50, 0.1);
+  --sena-shadow-md: 0 4px 6px rgba(0, 90, 50, 0.1);
+  --sena-shadow-lg: 0 10px 15px rgba(0, 90, 50, 0.15);
+  
+  /* Bordes */
+  --sena-border: 1px solid var(--sena-neutral);
+  --sena-border-radius: 6px;
+  --sena-border-radius-lg: 8px;
+  
+  /* Transiciones */
+  --sena-transition: all 0.3s ease;
+}
+
+/* =============================================
+   Estilos globales con tema SENA
+   ============================================= */
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--sena-base);
+  color: var(--sena-text);
+  line-height: 1.6;
+}
+
+/* Navbar y Header */
+.sena-navbar {
+  background-color: var(--sena-primary);
+  color: var(--sena-base);
+  box-shadow: var(--sena-shadow-md);
+}
+
+.sena-navbar .navbar-brand,
+.sena-navbar .nav-link {
+  color: var(--sena-base) !important;
+}
+
+.sena-navbar .nav-link:hover {
+  color: var(--sena-secondary) !important;
+}
+
+/* Sidebar */
+.sena-sidebar {
+  background-color: var(--sena-primary);
+  color: var(--sena-base);
+  box-shadow: var(--sena-shadow-lg);
+}
+
+.sena-sidebar .nav-link {
+  color: var(--sena-base);
+  transition: var(--sena-transition);
+}
+
+.sena-sidebar .nav-link:hover,
+.sena-sidebar .nav-link.active {
+  background-color: rgba(4, 180, 87, 0.2);
+  color: var(--sena-secondary);
+  border-left: 3px solid var(--sena-secondary);
+}
+
+/* Botones */
+.btn-sena-primary {
+  background-color: var(--sena-secondary);
+  color: var(--sena-base);
+  border: none;
+  border-radius: var(--sena-border-radius);
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: var(--sena-transition);
+}
+
+.btn-sena-primary:hover {
+  background-color: var(--sena-secondary-dark);
+  color: var(--sena-base);
+  transform: translateY(-1px);
+  box-shadow: var(--sena-shadow-md);
+}
+
+.btn-sena-secondary {
+  background-color: transparent;
+  color: var(--sena-primary);
+  border: 1px solid var(--sena-primary);
+  border-radius: var(--sena-border-radius);
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: var(--sena-transition);
+}
+
+.btn-sena-secondary:hover {
+  background-color: rgba(0, 90, 50, 0.1);
+  color: var(--sena-primary);
+}
+
+/* Cards */
+.sena-card {
+  background-color: var(--sena-base);
+  border: var(--sena-border);
+  border-radius: var(--sena-border-radius-lg);
+  box-shadow: var(--sena-shadow-sm);
+  transition: var(--sena-transition);
+}
+
+.sena-card:hover {
+  box-shadow: var(--sena-shadow-md);
+  transform: translateY(-2px);
+}
+
+.sena-card-header {
+  background-color: var(--sena-primary);
+  color: var(--sena-base);
+  border-bottom: none;
+  border-radius: var(--sena-border-radius-lg) var(--sena-border-radius-lg) 0 0 !important;
+}
+
+/* Tablas */
+.sena-table {
+  background-color: var(--sena-base);
+  border: var(--sena-border);
+  border-radius: var(--sena-border-radius);
+  overflow: hidden;
+}
+
+.sena-table thead {
+  background-color: var(--sena-primary);
+  color: var(--sena-base);
+}
+
+.sena-table th {
+  border-bottom: none;
+  font-weight: 600;
+  padding: 12px;
+}
+
+.sena-table tbody tr:hover {
+  background-color: rgba(0, 90, 50, 0.05);
+}
+
+.sena-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--sena-neutral-light);
+}
+
+/* Formularios */
+.sena-form-control {
+  border: 1px solid var(--sena-neutral);
+  border-radius: var(--sena-border-radius);
+  padding: 10px 12px;
+  transition: var(--sena-transition);
+}
+
+.sena-form-control:focus {
+  border-color: var(--sena-secondary);
+  box-shadow: 0 0 0 0.2rem rgba(4, 180, 87, 0.25);
+  outline: none;
+}
+
+/* Badges */
+.badge-sena-primary {
+  background-color: var(--sena-primary);
+  color: var(--sena-base);
+}
+
+.badge-sena-secondary {
+  background-color: var(--sena-secondary);
+  color: var(--sena-base);
+}
+
+/* Alertas */
+.alert-sena {
+  border-radius: var(--sena-border-radius);
+  border: none;
+}
+
+.alert-sena-success {
+  background-color: rgba(4, 180, 87, 0.1);
+  color: var(--sena-success);
+  border-left: 4px solid var(--sena-success);
+}
+
+.alert-sena-warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--sena-warning);
+  border-left: 4px solid var(--sena-warning);
+}
+
+.alert-sena-danger {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--sena-danger);
+  border-left: 4px solid var(--sena-danger);
+}
+
+/* Paginación */
+.pagination-sena .page-link {
+  color: var(--sena-primary);
+  border-color: var(--sena-neutral);
+}
+
+.pagination-sena .page-link:hover {
+  background-color: rgba(0, 90, 50, 0.1);
+  color: var(--sena-primary);
+  border-color: var(--sena-neutral);
+}
+
+.pagination-sena .page-item.active .page-link {
+  background-color: var(--sena-secondary);
+  border-color: var(--sena-secondary);
+  color: var(--sena-base);
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--sena-neutral-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sena-neutral);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sena-neutral-dark);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Utilidades */
+.text-sena-primary {
+  color: var(--sena-primary) !important;
+}
+
+.text-sena-secondary {
+  color: var(--sena-secondary) !important;
+}
+
+.bg-sena-primary {
+  background-color: var(--sena-primary) !important;
+}
+
+.bg-sena-secondary {
+  background-color: var(--sena-secondary) !important;
+}
+
+.border-sena {
+  border-color: var(--sena-neutral) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sena-sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+  
+  .sena-sidebar.active {
+    left: 0;
+  }
+}
