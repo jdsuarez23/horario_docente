@@ -4,8 +4,8 @@ import { horariosService, docentesService, fichasService, salonesService, compet
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 const Horarios = () => {
-  const { canEdit, canDelete, canCreate } = useRole();
-  const { user, isDocente } = useAuth();
+  const { canEdit, canDelete, canCreate, isDocente } = useRole();
+  const { user } = useAuth();
   const [horarios, setHorarios] = useState([]);
   const [docentes, setDocentes] = useState([]);
   const [fichas, setFichas] = useState([]);
