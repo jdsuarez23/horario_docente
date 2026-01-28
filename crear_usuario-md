@@ -1,0 +1,3 @@
+## con esto se puede gestionar desde el backend la creacion de usuarios
+cd backend
+node scripts/interactive-manager.js
