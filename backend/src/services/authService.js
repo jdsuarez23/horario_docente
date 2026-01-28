@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { generateToken } = require('../config/auth');
-const { executeQuery, executeProcedure } = require('../config/database');
+const { executeQuery } = require('../config/database');
 const { sql } = require('../config/database');
 
 class AuthService {
@@ -9,12 +9,12 @@ class AuthService {
     try {
       // Buscar usuario por username
       const users = await executeQuery(
-        'SELECT * FROM usuarios WHERE username = @username AND activo = 1',
+        'SELECT id_usuario, username, password_hash, rol, id_docente, activo FROM usuarios WHERE username = @username AND activo = 1',
         [{ name: 'username', type: sql.VarChar, value: username }]
       );
 
       if (!users || users.length === 0) {
-        throw new Error('Usuario o contraseña incorrectos');
+        throw new Error('Usuario o contraseña inválidos');
       }
 
       const user = users[0];
@@ -22,7 +22,7 @@ class AuthService {
       // Verificar contraseña
       const isValidPassword = await bcrypt.compare(password, user.password_hash);
       if (!isValidPassword) {
-        throw new Error('Usuario o contraseña incorrectos');
+        throw new Error('Usuario o contraseña inválidos');
       }
 
       // Generar token JWT
@@ -34,18 +34,17 @@ class AuthService {
       });
 
       return {
-        success: true,
         token,
         user: {
           id_usuario: user.id_usuario,
           username: user.username,
           rol: user.rol,
-          id_docente: user.id_docente,
-          docente_nombre: user.docente_nombre || null
+          id_docente: user.id_docente
         }
       };
     } catch (error) {
-      throw new Error(`Error en login: ${error.message}`);
+      console.error('Error en authService.login:', error);
+      throw error;
     }
   }
 
@@ -54,7 +53,7 @@ class AuthService {
     try {
       // Obtener usuario
       const users = await executeQuery(
-        'SELECT password_hash FROM usuarios WHERE id_usuario = @id_usuario AND activo = 1',
+        'SELECT password_hash FROM usuarios WHERE id_usuario = @id_usuario',
         [{ name: 'id_usuario', type: sql.Int, value: id_usuario }]
       );
 
@@ -62,15 +61,13 @@ class AuthService {
         throw new Error('Usuario no encontrado');
       }
 
-      const user = users[0];
-
-      // Verificar contraseña actual
-      const isValidPassword = await bcrypt.compare(oldPassword, user.password_hash);
+      // Verificar contraseña antigua
+      const isValidPassword = await bcrypt.compare(oldPassword, users[0].password_hash);
       if (!isValidPassword) {
-        throw new Error('Contraseña actual incorrecta');
+        throw new Error('La contraseña actual es incorrecta');
       }
 
-      // Hashear nueva contraseña
+      // Hash de nueva contraseña
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       // Actualizar contraseña
@@ -82,33 +79,33 @@ class AuthService {
         ]
       );
 
-      return { success: true, message: 'Contraseña actualizada correctamente' };
+      return { success: true };
     } catch (error) {
-      throw new Error(`Error cambiando contraseña: ${error.message}`);
+      console.error('Error en changePassword:', error);
+      throw error;
     }
   }
 
-  // Crear usuario (solo admin)
+  // Crear usuario
   async createUser(username, password, rol, id_docente = null) {
     try {
-      // Verificar si el usuario ya existe
-      const existingUser = await executeQuery(
+      // Verificar que el usuario no exista
+      const existingUsers = await executeQuery(
         'SELECT id_usuario FROM usuarios WHERE username = @username',
         [{ name: 'username', type: sql.VarChar, value: username }]
       );
 
-      if (existingUser && existingUser.length > 0) {
-        throw new Error('El nombre de usuario ya existe');
+      if (existingUsers && existingUsers.length > 0) {
+        throw new Error('El usuario ya existe');
       }
 
-      // Hashear contraseña
+      // Hash de contraseña
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Crear usuario
       const result = await executeQuery(
-        `INSERT INTO usuarios (username, password_hash, rol, id_docente) 
-         OUTPUT INSERTED.id_usuario, INSERTED.username, INSERTED.rol, INSERTED.id_docente
-         VALUES (@username, @password_hash, @rol, @id_docente)`,
+        `INSERT INTO usuarios (username, password_hash, rol, id_docente, activo, fecha_creacion)
+         VALUES (@username, @password_hash, @rol, @id_docente, 1, GETDATE())`,
         [
           { name: 'username', type: sql.VarChar, value: username },
           { name: 'password_hash', type: sql.VarChar, value: hashedPassword },
@@ -117,60 +114,68 @@ class AuthService {
         ]
       );
 
-      return { success: true, user: result[0] };
+      return { success: true, message: 'Usuario creado' };
     } catch (error) {
-      throw new Error(`Error creando usuario: ${error.message}`);
+      console.error('Error en createUser:', error);
+      throw error;
     }
   }
 
-  // Obtener usuarios (solo admin)
+  // Obtener usuarios
   async getUsers() {
     try {
       const users = await executeQuery(
-        `SELECT 
-          u.id_usuario,
-          u.username,
-          u.rol,
-          u.id_docente,
-          d.nombre_apellido AS docente_nombre,
-          u.fecha_creacion,
-          u.activo
-        FROM usuarios u
-        LEFT JOIN docentes d ON u.id_docente = d.id_docente
-        WHERE u.activo = 1
-        ORDER BY u.fecha_creacion DESC`
+        'SELECT id_usuario, username, rol, id_docente, activo FROM usuarios'
       );
 
-      return users;
+      return users || [];
     } catch (error) {
-      throw new Error(`Error obteniendo usuarios: ${error.message}`);
+      console.error('Error en getUsers:', error);
+      throw error;
     }
   }
 
-  // Actualizar usuario (solo admin)
-  async updateUser(id_usuario, username, rol, id_docente = null, activo = 1) {
+  // Actualizar usuario
+  async updateUser(id_usuario, updateData) {
     try {
-      const result = await executeQuery(
-        `UPDATE usuarios 
-         SET username = @username, rol = @rol, id_docente = @id_docente, activo = @activo
-         OUTPUT INSERTED.id_usuario, INSERTED.username, INSERTED.rol, INSERTED.id_docente
-         WHERE id_usuario = @id_usuario`,
-        [
-          { name: 'username', type: sql.VarChar, value: username },
-          { name: 'rol', type: sql.VarChar, value: rol },
-          { name: 'id_docente', type: sql.Int, value: id_docente },
-          { name: 'activo', type: sql.Bit, value: activo },
-          { name: 'id_usuario', type: sql.Int, value: id_usuario }
-        ]
-      );
+      const setClauses = [];
+      const params = [];
 
-      if (!result || result.length === 0) {
-        throw new Error('Usuario no encontrado');
+      if (updateData.username) {
+        setClauses.push('username = @username');
+        params.push({ name: 'username', type: sql.VarChar, value: updateData.username });
       }
 
-      return { success: true, user: result[0] };
+      if (updateData.rol) {
+        setClauses.push('rol = @rol');
+        params.push({ name: 'rol', type: sql.VarChar, value: updateData.rol });
+      }
+
+      if (updateData.id_docente !== undefined) {
+        setClauses.push('id_docente = @id_docente');
+        params.push({ name: 'id_docente', type: sql.Int, value: updateData.id_docente });
+      }
+
+      if (updateData.activo !== undefined) {
+        setClauses.push('activo = @activo');
+        params.push({ name: 'activo', type: sql.Int, value: updateData.activo });
+      }
+
+      if (setClauses.length === 0) {
+        throw new Error('No hay datos para actualizar');
+      }
+
+      params.push({ name: 'id_usuario', type: sql.Int, value: id_usuario });
+
+      await executeQuery(
+        `UPDATE usuarios SET ${setClauses.join(', ')} WHERE id_usuario = @id_usuario`,
+        params
+      );
+
+      return { success: true };
     } catch (error) {
-      throw new Error(`Error actualizando usuario: ${error.message}`);
+      console.error('Error en updateUser:', error);
+      throw error;
     }
   }
 
@@ -182,9 +187,29 @@ class AuthService {
         [{ name: 'id_usuario', type: sql.Int, value: id_usuario }]
       );
 
-      return { success: true, message: 'Usuario eliminado correctamente' };
+      return { success: true };
     } catch (error) {
-      throw new Error(`Error eliminando usuario: ${error.message}`);
+      console.error('Error en deleteUser:', error);
+      throw error;
+    }
+  }
+
+  // Obtener perfil del usuario
+  async getProfile(id_usuario) {
+    try {
+      const users = await executeQuery(
+        'SELECT id_usuario, username, rol, id_docente FROM usuarios WHERE id_usuario = @id_usuario AND activo = 1',
+        [{ name: 'id_usuario', type: sql.Int, value: id_usuario }]
+      );
+
+      if (!users || users.length === 0) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      return users[0];
+    } catch (error) {
+      console.error('Error en getProfile:', error);
+      throw error;
     }
   }
 }

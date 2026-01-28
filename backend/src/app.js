@@ -24,9 +24,20 @@ const app = express();
 
 // CORS
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL_PROD 
-    : process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    if (process.env.NODE_ENV === 'development') {
+      // En desarrollo, permitir localhost en cualquier puerto
+      callback(null, true);
+    } else {
+      // En producción, solo permitir FRONTEND_URL_PROD
+      const allowedOrigins = [process.env.FRONTEND_URL_PROD];
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token']

@@ -7,6 +7,22 @@ USE SENA_Horarios;
 GO
 
 -- =============================================
+-- LIMPIAR DATOS PREVIOS (OPCIONAL)
+-- =============================================
+-- Descomenta esto si quieres limpiar los datos antes de ejecutar
+/*
+DELETE FROM horarios;
+DELETE FROM docente_competencia;
+DELETE FROM ruta_formativa;
+DELETE FROM fichas;
+DELETE FROM docentes;
+DELETE FROM competencias;
+DELETE FROM programas;
+DELETE FROM salones;
+DELETE FROM usuarios;
+*/
+
+-- =============================================
 -- Insertar salones
 -- =============================================
 PRINT 'Insertando salones...';
@@ -20,6 +36,7 @@ INSERT INTO salones (nombre, numero, capacidad, ubicacion) VALUES
 ('Aula Multimedios', '301', 35, 'Bloque C - Tercer piso'),
 ('Laboratorio de Software', 'LAB2', 25, 'Bloque A - Segundo piso'),
 ('Aula de Matemáticas', '202', 30, 'Bloque B - Segundo piso');
+
 
 -- =============================================
 -- Insertar programas
@@ -222,22 +239,24 @@ INSERT INTO horarios (dia, hora_inicio, hora_fin, id_docente, id_ficha, id_salon
 -- =============================================
 PRINT 'Insertando usuarios...';
 
--- NOTA: Las contraseñas deben ser hasheadas en la aplicación
--- Estos son valores de ejemplo (hash de 'admin123', 'coord123', 'docente123')
+-- NOTA: Las contraseñas se hashean con bcryptjs (salt rounds: 10)
+-- admin123 -> $2a$10$gSvqqUPz639PKsFJVeuU.eewhjLQjuTWw2oM7TKh4yf6pVqJfLIlW
+-- coord123 -> $2a$10$bNFXA7V4MZy9M.o4xBpNOOAjv9s9fJ3VqKqTvU2NJpZ5dJmZ3KBrK
+-- docente123 -> $2a$10$2pFznNQNb3VhkLqYJqLpNuWRQfqEfN1yKV2M7hJ8cZ1bLpU9M7eFq
 
 -- Administrador
 INSERT INTO usuarios (username, password_hash, rol, id_docente) VALUES
-('admin', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', NULL);
+('admin', '$2a$10$gSvqqUPz639PKsFJVeuU.eewhjLQjuTWw2oM7TKh4yf6pVqJfLIlW', 'admin', NULL);
 
 -- Coordinador
 INSERT INTO usuarios (username, password_hash, rol, id_docente) VALUES
-('coordinador', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'coordinador', NULL);
+('coordinador', '$2a$10$bNFXA7V4MZy9M.o4xBpNOOAjv9s9fJ3VqKqTvU2NJpZ5dJmZ3KBrK', 'coordinador', NULL);
 
 -- Docentes (relacionados con docentes 1, 2 y 3)
 INSERT INTO usuarios (username, password_hash, rol, id_docente) VALUES
-('carlos.rodriguez', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'docente', 1),
-('maria.garcia', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'docente', 2),
-('jose.hernandez', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'docente', 3);
+('carlos.rodriguez', '$2a$10$2pFznNQNb3VhkLqYJqLpNuWRQfqEfN1yKV2M7hJ8cZ1bLpU9M7eFq', 'docente', 1),
+('maria.garcia', '$2a$10$2pFznNQNb3VhkLqYJqLpNuWRQfqEfN1yKV2M7hJ8cZ1bLpU9M7eFq', 'docente', 2),
+('jose.hernandez', '$2a$10$2pFznNQNb3VhkLqYJqLpNuWRQfqEfN1yKV2M7hJ8cZ1bLpU9M7eFq', 'docente', 3);
 
 -- =============================================
 -- Verificación de datos insertados
