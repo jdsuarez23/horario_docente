@@ -1,5 +1,5 @@
 # Sistema de Gestión de Horarios Académicos - SENA
-
+##
 ## 📋 Índice
 
 1. [Arquitectura del Sistema](#arquitectura-del-sistema)
