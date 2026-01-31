@@ -120,6 +120,7 @@ const Horarios = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Hora</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Docente</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Ficha</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Trimestre</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Salón</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Competencia</th>
               {!isDocente() && <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Acciones</th>}
@@ -132,6 +133,7 @@ const Horarios = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{horario.hora_inicio} - {horario.hora_fin}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{horario.docente_nombre}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{horario.ficha_codigo}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{horario.ficha_trimestre || '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{horario.salon_nombre} {horario.salon_numero}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{horario.competencia_nombre}</td>
                 {!isDocente() && (

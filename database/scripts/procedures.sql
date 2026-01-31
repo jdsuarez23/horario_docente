@@ -33,6 +33,7 @@ BEGIN
         d.numero_documento AS docente_documento,
         h.id_ficha,
         f.codigo AS ficha_codigo,
+        f.trimestre AS ficha_trimestre,
         h.id_salon,
         s.nombre AS salon_nombre,
         s.numero AS salon_numero,
@@ -168,6 +169,7 @@ BEGIN
         p.codigo AS programa_codigo,
         p.tipo AS programa_tipo,
         p.tipo_oferta AS programa_tipo_oferta,
+        f.trimestre,
         f.fecha_inicio,
         f.fecha_fin,
         f.fecha_registro,
@@ -179,7 +181,7 @@ BEGIN
     WHERE f.activo = 1
         AND (@id_ficha IS NULL OR f.id_ficha = @id_ficha)
     GROUP BY f.id_ficha, f.codigo, f.id_programa, p.nombre, p.codigo, 
-             p.tipo, p.tipo_oferta, f.fecha_inicio, f.fecha_fin, f.fecha_registro, f.activo
+             p.tipo, p.tipo_oferta, f.trimestre, f.fecha_inicio, f.fecha_fin, f.fecha_registro, f.activo
     ORDER BY f.codigo;
 END
 GO

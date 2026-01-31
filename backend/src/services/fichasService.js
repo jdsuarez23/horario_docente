@@ -29,7 +29,7 @@ class FichasService {
 
   async create(fichaData) {
     try {
-      const { codigo, id_programa, fecha_inicio, fecha_fin } = fichaData;
+      const { codigo, id_programa, fecha_inicio, fecha_fin, trimestre } = fichaData;
       
       // Verificar si el código ya existe
       const existing = await executeQuery(
@@ -52,14 +52,15 @@ class FichasService {
       }
       
       const result = await executeQuery(
-        `INSERT INTO fichas (codigo, id_programa, fecha_inicio, fecha_fin)
+        `INSERT INTO fichas (codigo, id_programa, fecha_inicio, fecha_fin, trimestre)
          OUTPUT INSERTED.*
-         VALUES (@codigo, @id_programa, @fecha_inicio, @fecha_fin)`,
+         VALUES (@codigo, @id_programa, @fecha_inicio, @fecha_fin, @trimestre)`,
         [
           { name: 'codigo', type: sql.VarChar, value: codigo },
           { name: 'id_programa', type: sql.Int, value: id_programa },
           { name: 'fecha_inicio', type: sql.Date, value: fecha_inicio || null },
-          { name: 'fecha_fin', type: sql.Date, value: fecha_fin || null }
+          { name: 'fecha_fin', type: sql.Date, value: fecha_fin || null },
+          { name: 'trimestre', type: sql.Int, value: trimestre || null }
         ]
       );
       
@@ -99,7 +100,7 @@ class FichasService {
       const result = await executeQuery(
         `UPDATE fichas 
          SET codigo = @codigo, id_programa = @id_programa, 
-             fecha_inicio = @fecha_inicio, fecha_fin = @fecha_fin, activo = @activo
+             fecha_inicio = @fecha_inicio, fecha_fin = @fecha_fin, trimestre = @trimestre
          OUTPUT INSERTED.*
          WHERE id_ficha = @id_ficha`,
         [
@@ -107,7 +108,7 @@ class FichasService {
           { name: 'id_programa', type: sql.Int, value: id_programa },
           { name: 'fecha_inicio', type: sql.Date, value: fecha_inicio || null },
           { name: 'fecha_fin', type: sql.Date, value: fecha_fin || null },
-          { name: 'activo', type: sql.Bit, value: activo },
+          { name: 'trimestre', type: sql.Int, value: fichaData.trimestre || null },
           { name: 'id_ficha', type: sql.Int, value: id_ficha }
         ]
       );

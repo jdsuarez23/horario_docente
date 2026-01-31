@@ -11,7 +11,7 @@ const Fichas = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingFicha, setEditingFicha] = useState(null);
-  const [formData, setFormData] = useState({ codigo: '', id_programa: '', fecha_inicio: '', fecha_fin: '' });
+  const [formData, setFormData] = useState({ codigo: '', id_programa: '', trimestre: '', fecha_inicio: '', fecha_fin: '' });
 
   useEffect(() => { loadData(); }, []);
 
@@ -29,7 +29,7 @@ const Fichas = () => {
 
   const handleCreate = () => {
     setEditingFicha(null);
-    setFormData({ codigo: '', id_programa: '', fecha_inicio: '', fecha_fin: '' });
+    setFormData({ codigo: '', id_programa: '', trimestre: '', fecha_inicio: '', fecha_fin: '' });
     setShowModal(true);
   };
 
@@ -38,6 +38,7 @@ const Fichas = () => {
     setFormData({
       codigo: ficha.codigo,
       id_programa: ficha.id_programa,
+      trimestre: ficha.trimestre || '',
       fecha_inicio: ficha.fecha_inicio ? ficha.fecha_inicio.split('T')[0] : '',
       fecha_fin: ficha.fecha_fin ? ficha.fecha_fin.split('T')[0] : ''
     });
@@ -47,13 +48,20 @@ const Fichas = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const dataToSubmit = {
+        codigo: formData.codigo,
+        id_programa: parseInt(formData.id_programa),
+        trimestre: formData.trimestre ? parseInt(formData.trimestre) : null,
+        fecha_inicio: formData.fecha_inicio || null,
+        fecha_fin: formData.fecha_fin || null
+      };
       if (editingFicha) {
-        await fichasService.update(editingFicha.id_ficha, formData);
+        await fichasService.update(editingFicha.id_ficha, dataToSubmit);
       } else {
-        await fichasService.create(formData);
+        await fichasService.create(dataToSubmit);
       }
       setShowModal(false);
-      loadData();
+      await loadData();
     } catch (error) {
       alert(error.message);
     }
@@ -63,7 +71,7 @@ const Fichas = () => {
     if (window.confirm('¿Está seguro de eliminar esta ficha?')) {
       try {
         await fichasService.delete(id);
-        loadData();
+        await loadData();
       } catch (error) {
         alert(error.message);
       }
@@ -121,6 +129,7 @@ const Fichas = () => {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Código</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Programa</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Trimestre</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Fecha Inicio</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Fecha Fin</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Horarios</th>
@@ -132,6 +141,7 @@ const Fichas = () => {
               <tr key={ficha.id_ficha} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{ficha.codigo}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ficha.programa_nombre}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ficha.trimestre || '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ficha.fecha_inicio ? new Date(ficha.fecha_inicio).toLocaleDateString() : '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ficha.fecha_fin ? new Date(ficha.fecha_fin).toLocaleDateString() : '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{ficha.total_horarios} horarios</span></td>
@@ -159,6 +169,13 @@ const Fichas = () => {
                 <select value={formData.id_programa} onChange={(e) => setFormData({...formData, id_programa: e.target.value})} required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sena-secondary">
                   <option value="">Seleccionar programa</option>
                   {programas.map(p => <option key={p.id_programa} value={p.id_programa}>{p.nombre}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Trimestre</label>
+                <select value={formData.trimestre} onChange={(e) => setFormData({...formData, trimestre: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sena-secondary">
+                  <option value="">Seleccionar trimestre</option>
+                  {[1, 2, 3, 4, 5, 6].map(t => <option key={t} value={t}>Trimestre {t}</option>)}
                 </select>
               </div>
               <div>

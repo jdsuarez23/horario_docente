@@ -81,7 +81,7 @@ class ProgramasService {
 
   async update(id_programa, programaData) {
     try {
-      const { nombre, codigo, tipo, duracion_trimestres, tipo_oferta, activo } = programaData;
+      const { nombre, codigo, tipo, duracion_trimestres, tipo_oferta } = programaData;
       
       // Verificar si el código ya existe (excluyendo el actual)
       const existing = await executeQuery(
@@ -99,7 +99,7 @@ class ProgramasService {
       const result = await executeQuery(
         `UPDATE programas 
          SET nombre = @nombre, codigo = @codigo, tipo = @tipo, 
-             duracion_trimestres = @duracion_trimestres, tipo_oferta = @tipo_oferta, activo = @activo
+             duracion_trimestres = @duracion_trimestres, tipo_oferta = @tipo_oferta
          OUTPUT INSERTED.*
          WHERE id_programa = @id_programa`,
         [
@@ -108,7 +108,6 @@ class ProgramasService {
           { name: 'tipo', type: sql.VarChar, value: tipo },
           { name: 'duracion_trimestres', type: sql.Int, value: duracion_trimestres || 4 },
           { name: 'tipo_oferta', type: sql.VarChar, value: tipo_oferta || 'abierta' },
-          { name: 'activo', type: sql.Bit, value: activo },
           { name: 'id_programa', type: sql.Int, value: id_programa }
         ]
       );

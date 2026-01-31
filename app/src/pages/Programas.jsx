@@ -39,13 +39,17 @@ const Programas = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const dataToSubmit = {
+        ...formData,
+        duracion_trimestres: parseInt(formData.duracion_trimestres)
+      };
       if (editingPrograma) {
-        await programasService.update(editingPrograma.id_programa, formData);
+        await programasService.update(editingPrograma.id_programa, dataToSubmit);
       } else {
-        await programasService.create(formData);
+        await programasService.create(dataToSubmit);
       }
       setShowModal(false);
-      loadProgramas();
+      await loadProgramas();
     } catch (error) {
       alert(error.message);
     }

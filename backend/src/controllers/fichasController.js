@@ -12,6 +12,11 @@ const fichaSchema = Joi.object({
     'number.base': 'El ID del programa debe ser un número',
     'number.integer': 'El ID del programa debe ser un número entero'
   }),
+  trimestre: Joi.number().integer().min(1).max(6).allow(null).allow('').messages({
+    'number.base': 'El trimestre debe ser un número',
+    'number.min': 'El trimestre debe ser entre 1 y 6',
+    'number.max': 'El trimestre debe ser entre 1 y 6'
+  }),
   fecha_inicio: Joi.date().allow(null).messages({
     'date.base': 'La fecha de inicio debe ser una fecha válida'
   }),
